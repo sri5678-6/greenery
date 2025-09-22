@@ -3,118 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreenFinder Prototype</title>
+    <title>Greeloc App Interface</title>
     <style>
+        :root {
+            --color-primary: #508C5C; /* Earthy Green */
+            --color-background: #F2F4E6; /* Soft Cream */
+            --color-text: #4D3D3D; /* Rich Brown */
+            --color-accent: #FDBE2A; /* Sun Yellow */
+        }
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
-            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #f0f2f5;
+            min-height: 100vh;
+            background-color: var(--color-background);
+            color: var(--color-text);
         }
-        .map-container {
-            position: relative;
-            width: 80%;
-            height: 90%;
-            border: 2px solid #ccc;
-            background-color: #e6f2e6;
-            background-image: url('https://via.placeholder.com/800x600/e6f2e6/808080?text=Map+Placeholder');
-            background-size: cover;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .green-dot {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background-color: #28a745;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid white;
-            animation: pulse 1.5s infinite;
-        }
-        .green-dot:hover {
-            transform: scale(1.2);
-        }
-        .popup {
-            position: absolute;
+        .app-container {
+            width: 375px; /* Standard mobile phone width */
+            height: 667px; /* Standard mobile phone height */
             background-color: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 10;
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-            min-width: 200px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
         }
-        .popup h3 {
-            margin: 0;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: var(--color-background);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .header h1 {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+        .header .profile-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--color-primary);
+            border-radius: 50%;
+        }
+        .map-section {
+            position: relative;
+            width: 100%;
+            height: calc(100% - 100px); /* Adjusting for header and bottom panel */
+            background-image: url('https://via.placeholder.com/600x800/e0e0e0/808080?text=Custom+Styled+Map'); /* A placeholder for a beautiful map */
+            background-size: cover;
+            background-position: center;
+        }
+        .producer-icon {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            background-color: var(--color-primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border: 3px solid white;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+        .producer-icon:hover {
+            transform: scale(1.1);
+        }
+        .producer-icon.fruits { background-color: #FFA500; }
+        .producer-icon.vegetables { background-color: #28a745; }
+
+        .producer-icon-inner {
+            font-size: 1.5em;
+            color: white;
+        }
+
+        .bottom-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(100%);
+            transition: transform 0.5s ease-in-out;
+        }
+        .bottom-panel.active {
+            transform: translateY(0);
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-size: 1.2em;
-            color: #333;
+            font-weight: bold;
+            color: var(--color-text);
+            margin-bottom: 15px;
         }
-        .popup ul {
-            list-style-type: none;
+        .panel-list {
+            list-style: none;
             padding: 0;
             margin: 0;
         }
-        .popup ul li {
-            padding: 5px 0;
-            color: #555;
+        .panel-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        .panel-list li:last-child {
+            border-bottom: none;
+        }
+        .buy-button {
+            background-color: var(--color-accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div class="map-container" id="map">
-    <div class="green-dot" style="top: 25%; left: 35%;" data-supplier="Rohan's Garden" data-items="Tomatoes (2kg), Basil (1 bunch)"></div>
-    <div class="green-dot" style="top: 50%; left: 60%;" data-supplier="Community Farm" data-items="Kale (5 bunches), Zucchini (3kg)"></div>
-    <div class="green-dot" style="top: 70%; left: 20%;" data-supplier="Urban Greens" data-items="Microgreens (1 box)"></div>
+<div class="app-container">
+    <div class="header">
+        <h1>Greeloc</h1>
+        <div class="profile-icon"></div>
+    </div>
+    <div class="map-section">
+        <div class="producer-icon fruits" style="top: 30%; left: 45%;" data-supplier="The Honest Garden" data-items="Organic Tomatoes - $2/kg, Strawberries - $5/kg">
+            <span class="producer-icon-inner">🍎</span>
+        </div>
+        <div class="producer-icon vegetables" style="top: 60%; left: 20%;" data-supplier="Root & Kindred Farm" data-items="Carrots - $1.50/kg, Kale - $3/bunch">
+            <span class="producer-icon-inner">🥕</span>
+        </div>
+    </div>
+    <div class="bottom-panel" id="bottomPanel">
+        <div class="panel-header" id="panelHeader">
+            <span>Available from Nearby</span>
+        </div>
+        <ul class="panel-list" id="panelList">
+            </ul>
+    </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const dots = document.querySelectorAll('.green-dot');
-        const map = document.getElementById('map');
-        
-        dots.forEach(dot => {
-            dot.addEventListener('click', (event) => {
-                // Remove any existing popups
-                const existingPopup = document.querySelector('.popup');
-                if (existingPopup) {
-                    existingPopup.remove();
-                }
+        const icons = document.querySelectorAll('.producer-icon');
+        const bottomPanel = document.getElementById('bottomPanel');
+        const panelHeader = document.getElementById('panelHeader');
+        const panelList = document.getElementById('panelList');
 
-                const supplier = dot.dataset.supplier;
-                const items = dot.dataset.items.split(',').map(item => `<li>${item.trim()}</li>`).join('');
+        icons.forEach(icon => {
+            icon.addEventListener('click', () => {
+                const supplierName = icon.dataset.supplier;
+                const items = icon.dataset.items.split(',').map(item => {
+                    const [name, price] = item.split(' - ');
+                    return `
+                        <li>
+                            <span>${name.trim()}</span>
+                            <button class="buy-button">${price.trim()}</button>
+                        </li>
+                    `;
+                }).join('');
 
-                const popup = document.createElement('div');
-                popup.classList.add('popup');
-                popup.innerHTML = `
-                    <h3>${supplier}</h3>
-                    <ul>${items}</ul>
-                `;
+                panelHeader.innerHTML = `<span>${supplierName}</span>`;
+                panelList.innerHTML = items;
 
-                // Position the popup near the clicked dot
-                const dotRect = dot.getBoundingClientRect();
-                const mapRect = map.getBoundingClientRect();
-
-                popup.style.top = `${dot.offsetTop + 30}px`;
-                popup.style.left = `${dot.offsetLeft + 30}px`;
-                
-                map.appendChild(popup);
-                popup.style.display = 'flex';
+                bottomPanel.classList.add('active');
             });
         });
+
+        // To close the panel, you would add a close button or swipe gesture in a real app
+        // For this demo, clicking outside the panel will close it
+        document.querySelector('.map-section').addEventListener('click', (event) => {
+            if (!event.target.closest('.producer-icon') && bottomPanel.classList.contains('active')) {
+                bottomPanel.classList.remove('active');
+            }
+        });
     });
+</script>
+
+</body>
+</html>
 </script>
 
 </body>
